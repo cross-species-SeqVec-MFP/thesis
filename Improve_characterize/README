@@ -1,0 +1,28 @@
+To improve the performance of SeqVec-based molecular function prediction by different embedding types:
+
+1) Use pre-trained SeqVec model as made available by [1] to obtain the amino acid embeddings from all
+   layers of the SeqVec model.*
+2) Get GO term annotations (class labels) for all terms you want to evaluate.*
+3) Use the 'extract_layer_embeddings.py', 'calculate_moments.py' and 'calculate_genmean.py' scripts
+   to extract/calculate all the different embedding types in this study.
+4) Train a LR classifier using 'LR_train.py' and 'LRresults.py' or a MLP classifier using
+   'neural_network_MLP.py' on the different embedding types. 
+5) Evaluate if changes in performance are significant using 'test_statistical.py'
+
+To characterise SeqVec-based molecular function prediction:
+
+1) Characterize performance of trained LR classifier using baseline embeddings term-centric using
+   'performance_test.py' and protein-centric using 'protein_Centric_test.py.
+2) Predict protein length from baseline embeddings using 'predict_protein_length.py'
+3) Get measures on structural annotations and structural similairty using 'protein_domains.py'
+
+
+* In this research, we continued upon previous work and both the amino acid embeddings and the class
+  labels were available from [2]
+
+[1] Heinzinger, M., Elnaggar, A., Wang, Y., Dallago, C., Nechaev, D., Matthes, F., & Rost, B. (2019). 
+    Modeling aspects of the language of life through transfer-learning protein sequences. 
+    BMC bioinformatics, 20(1), 723.
+[2] Villegas-Morcillo, A., Makrodimitris, S., van Ham, R., Gomez, A. M., Sanchez, V., & Reinders, 
+    M. (2020). Unsupervised protein embeddings outperform hand-crafted sequence and structure 
+    features at predicting molecular function. bioRxiv.
