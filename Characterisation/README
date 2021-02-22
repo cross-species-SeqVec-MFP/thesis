@@ -1,0 +1,22 @@
+To characterise the performance of SeqVec-based molecular function prediction:
+
+To train the LR classifier:
+1) Use data on embeddings, proteins and GO annotations fromprevious work [1,2]
+2) Train a LR classifier using 'LR_train.py' and evaluate its performance using 'LRresults.py' . 
+
+To characterise SeqVec-based molecular function prediction:
+3) Characterize performance of trained LR classifier term-centric using
+   'term_centric.py' and protein-centric using 'protein_centric.py.
+4) Predict protein length from embeddings using 'predict_protein_length.py'
+5) Get measures on structural annotations and structural similairty using 'protein_domains.py'
+
+The folder 'raw_structural_data' contains the data on strutural similarity as obtaind from the 
+Interpre database
+
+
+[1] Heinzinger, M., Elnaggar, A., Wang, Y., Dallago, C., Nechaev, D., Matthes, F., & Rost, B. (2019). 
+    Modeling aspects of the language of life through transfer-learning protein sequences. 
+    BMC bioinformatics, 20(1), 723.
+[2] Villegas-Morcillo, A., Makrodimitris, S., van Ham, R., Gomez, A. M., Sanchez, V., & Reinders, 
+    M. (2020). Unsupervised protein embeddings outperform hand-crafted sequence and structure 
+    features at predicting molecular function. bioRxiv.
