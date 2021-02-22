@@ -1,0 +1,6 @@
+Make a blast database using the mouse training set
+makeblastdb  -in mouse_proteinsequence_training_mousemodel.fasta -dbtype prot -title "BLAST DB mousemodel" -parse_seqids -out BLAST_mousemodel
+
+
+To run psi-blast
+psiblast -query /somedirectory/fasta_GO_embeddings/human_proteinsequence.fasta -outfmt 7 -db /somedirectory/BLAST/database_mouse/BLAST_mousemodel -out /somedirectory/BLAST/psiBLAST_human_mouse -num_iterations 3
