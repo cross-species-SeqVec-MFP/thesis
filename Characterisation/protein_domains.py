@@ -7,24 +7,24 @@ from scipy import stats
 import pandas as pd
 
 domain_list = []
-with open('/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/Sequence_fasta_tab_files/domains.tsv') as f:
+with open('/somedirectory/domains.tsv') as f:
     for line in f:
         domain_list.append(line.split("\t")[0])
 
 family_list = []
-with open('/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/Sequence_fasta_tab_files/families.tsv') as f:
+with open('/somedirectory/families.tsv') as f:
     for line in f:
         family_list.append(line.split("\t")[0])
 
 superfamily_list = []
-with open('/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/Sequence_fasta_tab_files/superfamilies.tsv') as f:
+with open('/somedirectory/superfamilies.tsv') as f:
     for line in f:
         superfamily_list.append(line.split("\t")[0])
 
 domains = {}
 familie = {}
 superfamilie = {}
-with open('/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/Sequence_fasta_tab_files/domains.tab') as f:
+with open('/somedirectory/domains.tab') as f:
     for line in f:
         if len(line) > 15:
             id = line.split("\t")[0]
@@ -55,38 +55,19 @@ with open('/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/Sequence_fasta_tab_f
                 superfamilie[id] = supfam
 
 
-with open('/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/Sequence_fasta_tab_files/domains.pickle', 'wb') as f:
-    pickle.dump(domains, f)
-
-with open('/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/Sequence_fasta_tab_files/family.pickle', 'wb') as f:
-    pickle.dump(familie, f)
-
-with open('/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/Sequence_fasta_tab_files/superfamily.pickle', 'wb') as f:
-    pickle.dump(superfamilie, f)
 
 
-
-####################################
-with open('/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/Sequence_fasta_tab_files/domains.pickle', 'rb') as f:
-    domains = pickle.load(f)
-
-with open('/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/Sequence_fasta_tab_files/family.pickle', 'rb') as f:
-    familie = pickle.load(f)
-
-with open('/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/Sequence_fasta_tab_files/superfamily.pickle', 'rb') as f:
-    superfamilie = pickle.load(f)
-
-with open('/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/final/improve_seqvec/data/XYdata_scaled_test', 'rb') as fw:
+with open('/somedirectory/XYdata_scaled_test', 'rb') as fw:
     Xtest, Ytest, GO_terms = pickle.load(fw)
 
-protein_id_test = np.loadtxt('/tudelft.net/staff-bulk/ewi/insy/DBL/ameliavm/sequence-only/lists/test_final.names', dtype=str).tolist()
+protein_id_test = np.loadtxt('/somedirectory/test_final.names', dtype=str).tolist()
 
-with open('/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/Proof_moments/optimize/predictions/moments/test/results.pkl', 'rb') as fw:
+with open('/somedirectory/results.pkl', 'rb') as fw:
     perf1024m, perf3072m, perf5120m, perf10240m, terms = pickle.load(fw)
 
 ave_term_1024 = np.mean(perf1024m, axis=1)
 
-with open('/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/final/improve_seqvec/data/GO_depth_all_proteins.pkl', 'rb') as fw:
+with open('/somedirectory/GO_depth_all_proteins.pkl', 'rb') as fw:
     depth_terms = pickle.load(fw)
 
 ### for domains
@@ -194,29 +175,8 @@ plt.savefig('figures/domain80%_overlap' + current_time + '.png')
 plt.savefig('figures/domain80%_overlap' + current_time + '.pdf')
 plt.close()
 
-# var_domain = stats.spearmanr(highest, len1)[0]
-# fac_domain = stats.spearmanr(highest, fac_overlap)[0]
-#
-# Rxyz = math.sqrt((abs(perf_domain**2) + abs(perf_var**2) - 2*perf_domain*perf_var*var_domain) / (1-abs(var_domain**2)) )
-# R2 = Rxyz**2
-# # Calculate adjusted R-squared
-# n = len(term) # Number of rows
-# k = 2       # Number of independent variables
-# R2_adj = 1 - ( ((1-R2)*(n-1)) / (n-k-1) )
-#
-# ###heatman of influecning thingies
-# corr = data.corr()
-# fig = plt.figure()
-# ax = fig.add_subplot(111)
-# cax = ax.matshow(corr,cmap='coolwarm', vmin=-1, vmax=1)
-# fig.colorbar(cax)
-# ticks = np.arange(0,len(data.columns),1)
-# ax.set_xticks(ticks)
-# plt.xticks(rotation=90)
-# ax.set_yticks(ticks)
-# ax.set_xticklabels(data.columns)
-# ax.set_yticklabels(data.columns)
-# plt.show()
+
+
 
 
 ### for family
@@ -280,12 +240,7 @@ print('number tested terms: %s' % joe)
 
 term = np.array(term)
 
-from yellowbrick.regressor import CooksDistance
-visualizer = CooksDistance()
-visualizer.fit(term.reshape(-1,1), len1)
-now = datetime.now()
-current_time = now.strftime("%d%m%Y%H%M%S")
-plt.savefig('figures/outliers' + current_time + '.png')
+
 
 df = pd.DataFrame({'perf': term, 'avg': len1})
 df.drop(df.loc[df['perf']==df.perf.max()].index, inplace=True) #dropping the row
@@ -470,21 +425,8 @@ stats.spearmanr(new1, new2)
 
 
 
-Rxyz = math.sqrt((abs(perf_domain**2) + abs(perf_domain1**2) - 2*perf_domain*perf_domain1*joe) / (1-abs(joe**2)) )
-R2 = Rxyz**2
-# Calculate adjusted R-squared
-n = len(term) # Number of rows
-k = 2       # Number of independent variables
-R2_adj = 1 - ( ((1-R2)*(n-1)) / (n-k-1) )
 
-
-
-with open('/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/Proof_moments/optimize/predictions/gen_mean/test/results.pkl', 'rb') as fw:
-    perf1024, perf3072, perf5120, perf10240, terms = pickle.load(fw)
-
-ave_term_1024 = np.mean(perf1024, axis=1)
-
-with open('/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/GO_terms/GO_depth_all_mouse_proteins.pkl', 'rb') as fw:
+with open('/somedirectory/GO_depth_all_mouse_proteins.pkl', 'rb') as fw:
     depth_GO = pickle.load(fw)
 
 levels = np.zeros((len(terms),))
@@ -506,7 +448,7 @@ for i, x in enumerate(terms):
 # grouping terms
 kids_terms = {}
 for term in depth_2_terms:
-    with open("/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/GO_terms/GO_descendants/%s.txt" % term) as f:
+    with open("/somedirectory/GO_descendants/%s.txt" % term) as f:
         lines = f.readlines()
     info = np.zeros(2, dtype=object)
     for i, x in enumerate(lines[0].strip("\n").split(" ")):
