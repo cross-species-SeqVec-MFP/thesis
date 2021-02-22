@@ -7,16 +7,18 @@ from statistics import mean
 import matplotlib.pyplot as plt
 from datetime import datetime
 
-with open('/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/GO_terms/GO_depth_all_mouse_proteins.pkl', 'rb') as fw:
+# this code finds the performance of the MLP classifier per 'GO category'
+
+with open('/somedirectory/GO_depth_all_mouse_proteins.pkl', 'rb') as fw:
     depth_GO = pickle.load(fw)
 
 def get_terms(species):
-    with open('/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/Mouse_model/validation_results/predictions_term_centric/%s.pkl' % species, 'rb') as fw:
+    with open('/somedirectory/validation_results/predictions_term_centric/%s.pkl' % species, 'rb') as fw:
         data = pickle.load(fw)
 
     rocauc = roc_auc_score(data['Yval'], data['Ypost'], average=None)
 
-    with open('/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/Mouse_model/BLAST/annotation_result/term_centric/%s.pkl' % species, 'rb') as fw:
+    with open('/somedirectory/BLAST/annotation_result/term_centric/%s.pkl' % species, 'rb') as fw:
         data_blast = pickle.load(fw)
 
     rocauc_blast = roc_auc_score(data_blast['Yval'], data_blast['Ypost'], average=None)
@@ -33,7 +35,7 @@ def get_terms(species):
     kids_terms = {}
     for term in data['loc_term'].keys():
         if int(depth_GO[term][0]) == 2:
-            with open("/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/GO_terms/GO_descendants/%s.txt" % term) as f:
+            with open("/somedirectory/GO_terms/GO_descendants/%s.txt" % term) as f:
                 lines = f.readlines()
             info = np.zeros(2, dtype=object)
             for i, x in enumerate(lines[0].strip("\n").split(" ")):
@@ -93,13 +95,6 @@ elems_in_all = set(df_f_mouse) & set(df_f_rat) & set(df_f_human) & set(df_f_zebr
 
 df_in_all = pd.DataFrame({'Species': all_df_s, 'GO_term': all_df_f, 'Rocauc score': all_df_r})
 
-# to_remove = unique_f
-# for ele in elems_in_all:
-#     to_remove.remove(ele)
-#
-# for ele in to_remove:
-#     df_in_all = df_in_all[df_in_all.GO_term != ele]
-
 
 #######################3 terms overlapping in at least 6 species
 elems_in_6 = []
@@ -152,54 +147,4 @@ now = datetime.now()
 current_time = now.strftime("%d%m%Y%H%M%S")
 plt.savefig('heatmap' + current_time + '.pdf')
 plt.close()
-
-
-
-
-
-
-
-
-
-
-
-
-now = datetime.now()
-current_time = now.strftime("%d%m%Y%H%M%S")
-plt.figure(figsize=[9, 11])
-sns.set(style="whitegrid")
-sns.swarmplot(y="GO_term", x="Rocauc score", hue='Species', data=df_in_all, size=6, order=ordah)
-plt.title('across species function performance')
-sns.boxplot(y="GO_term", x="Rocauc score", data=df_in_all, order =ordah ,medianprops = {'color': 'gray', 'linewidth': 1}, capprops = {'color': 'gray', 'linewidth': 1}, whiskerprops = {'color': 'gray', 'linewidth': 1}, boxprops={'facecolor': 'None', 'edgecolor': 'gray', 'linewidth': 1}, showfliers=False)
-plt.xlim([0.48, 1.02])
-plt.tight_layout()
-plt.savefig('beeswarm_type_GOterm_species' + current_time + '.png')
-plt.savefig('beeswarm_type_GOterm_species' + current_time + '.pdf')
-plt.close()
-
-
-############################################################3
-df_in_all = pd.DataFrame({'Species': all_df_s, 'GO_term': all_df_f, 'Rocauc score': all_df_rb})
-
-to_remove = unique_f
-for ele in elems_in_6:
-    to_remove.remove(ele)
-
-for ele in to_remove:
-    df_in_all = df_in_all[df_in_all.GO_term != ele]
-
-
-now = datetime.now()
-current_time = now.strftime("%d%m%Y%H%M%S")
-plt.figure(figsize=[9, 11])
-sns.set(style="whitegrid")
-sns.swarmplot(y="GO_term", x="Rocauc score", hue='Species', data=df_in_all, size=6, order=ordah)
-plt.title('across species function performance')
-sns.boxplot(y="GO_term", x="Rocauc score", data=df_in_all, order =ordah ,medianprops = {'color': 'gray', 'linewidth': 1}, capprops = {'color': 'gray', 'linewidth': 1}, whiskerprops = {'color': 'gray', 'linewidth': 1}, boxprops={'facecolor': 'None', 'edgecolor': 'gray', 'linewidth': 1}, showfliers=False)
-plt.xlim([0.48, 1.02])
-plt.tight_layout()
-plt.savefig('beeswarm_type_GOterm_species_blast' + current_time + '.png')
-plt.savefig('beeswarm_type_GOterm_species_blast' + current_time + '.pdf')
-plt.close()
-
 
