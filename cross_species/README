@@ -5,14 +5,14 @@ To perform cross-species SeqVec-based molecular function prediction:
 2) Get GO term annotations (class labels) for all proteins from the target species using 
    'GO_statistics.py'
 3) Use 'split_stratify.py' to split the central model species dataset into a training, validation 
-   and test set.
+   and test set. This uses the multilabel split algorithm from [2].
 4) Get the overlapping GO terms between the central model organism and the target species
    for term-centric and protein-centric evaluation using 'get_GO_terms.py'.
 5) Train a MLP classifier using 'neural_network2.py' on the Mouse training set. 
 6) Evaluate performance of MLP classifier in target species using 'neural_network_results.py'
 7) Get distributions on sequence identity using 'distru_Seq_identity.py'
-8) Get BLAST top hit for every target protein using 'top_hit.py'
-9) Get performance baseline BLAST method using 'get_annotations.py'
+8) Get PSI-BLAST top hit for every target protein using 'top_hit.py'
+9) Get performance baseline PSI-BLAST method using 'get_annotations.py'
 10) Identity conserved proteins functions across different species using 'GO_term_preserved.py'
 11) Evaluate influence of non-evaluated GO terms using 'protein_Centric_noannotation_results.py'
 
@@ -20,3 +20,5 @@ To perform cross-species SeqVec-based molecular function prediction:
 [1] Heinzinger, M., Elnaggar, A., Wang, Y., Dallago, C., Nechaev, D., Matthes, F., & Rost, B. (2019). 
     Modeling aspects of the language of life through transfer-learning protein sequences. 
     BMC bioinformatics, 20(1), 723.
+[2] Szyma ́nski P, Kajdanowicz T.  A scikit-based Python environment for performingmulti-label 
+    classification.  ArXiv e-prints. 2017
