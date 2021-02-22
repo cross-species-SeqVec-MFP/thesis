@@ -13,16 +13,15 @@ import sys
 
 bestC = 1
 
-with open('/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/Proof_moments/optimize/Scaled_data/XYdata_moment_test', 'rb') as fz:
+with open('/somedirectory/XYdata_moment_test', 'rb') as fz:
     Xtest, Ytest = pickle.load(fz)
 
-terms2keep = np.load('/tudelft.net/staff-bulk/ewi/insy/DBL/ameliavm/sequence-only/lists/termIndicesToUse.npy')
+terms2keep = np.load('/somedirectory/termIndicesToUse.npy')
 
 Xtest = Xtest[:, np.r_[0:1024]]
 Ytest = Ytest[:, terms2keep]
 
-with open('/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/Proof_moments/optimize/predictions/'
-          'moments/validation/c%s_termsall_fea%s.pkl' % (bestC, Xtest.shape[1]), 'rb') as fw:
+with open('/somedirectory/c%s_termsall_fea%s.pkl' % (bestC, Xtest.shape[1]), 'rb') as fw:
     data = pickle.load(fw)
 clf = data['trained_model']
 
@@ -31,25 +30,19 @@ Ypost_adp = np.zeros((Ytest.shape))
 for i, pred in enumerate(Ypost):
     Ypost_adp[:, i] = pred[:, 1]
 
-with open('/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/Proof_moments/optimize/predictions/'
-          'moments/test/c%s_termsall_fea%s.pkl' % (bestC, Xtest.shape[1]), 'wb') as fw:
-    pickle.dump({'Ytest': Ytest, 'Ypost': Ypost_adp}, fw)
-
 
 def len_aa(file_names_id):
-    id = np.loadtxt('/tudelft.net/staff-bulk/ewi/insy/DBL/ameliavm/'
-                    'sequence-only/lists/' + file_names_id, dtype=str).tolist()
+    id = np.loadtxt('/somedirectory/lists/' + file_names_id, dtype=str).tolist()
     length = np.zeros((len(id), ))
     type = '.pkl'
     for i, x in enumerate(id):
-        with open('/tudelft.net/staff-bulk/ewi/insy/DBL/ameliavm/sequence-only/dataset/' + x + type, 'rb') as f:
+        with open('/somedirectory/dataset/' + x + type, 'rb') as f:
             protein_info = pickle.load(f)
         length[i] = len(protein_info['sequence'])
     return length
 
 len_pro = len_aa('test_final.names')
-with open('/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/Proof_moments/optimize/predictions/'
-          'moments/test/length.pkl', 'wb') as fw:
+with open('/somedirectoryt/length.pkl', 'wb') as fw:
     pickle.dump(len_pro, fw)
 
 
@@ -57,20 +50,13 @@ with open('/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/Proof_moments/optimi
 
 
 #########################
-with open('/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/Proof_moments/optimize/predictions/'
-          'moments/test/c%s_termsall_fea%s.pkl' % (bestC, 1024), 'rb') as fw:
+with open('/somedirecotry/c%s_termsall_fea%s.pkl' % (bestC, 1024), 'rb') as fw:
     data = pickle.load(fw)
 Ytest = data['Ytest']
 Ypost_adp = data['Ypost']
 
-with open('/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/final/improve_seqvec/generalized_means/Trained_LR/c%s_LR_numfea%s_1024LSTM1_test.pkl' % (1, 10240), 'rb') as fw:
-    data = pickle.load(fw)
-Ytest_im = data['Yval']
-Ypost_adp_im = data['Ypost']
 
-with open('/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/Proof_moments/optimize/predictions/'
-          'moments/test/length.pkl', 'rb') as fw:
-    len_pro = pickle.load(fw)
+
 
 num_annotations = np.sum(Ytest, axis=0)
 num_annotations_protein = np.sum(Ytest, axis=1)
@@ -203,17 +189,4 @@ stats.spearmanr(f1, num_annotations_protein)
 
 
 
-
-# now = datetime.now()
-# current_time = now.strftime("%d%m%Y%H%M%S")
-# plt.scatter(length[tokeep1], ff, s=2, color='darkorange', alpha=0.75)
-# plt.grid(alpha=0.75)
-# plt.xlabel('Protein length (# amino acids)')
-# plt.ylabel('F1-score')
-# # plt.xlim((0, 1))
-# # plt.ylim((-0.18, 0.18))
-# plt.title('LR classifier performance per protein for 1024 fea')
-# plt.savefig('figures/scatter_f1_length_ELMo_1024' +current_time + '.png')
-# plt.savefig('figures/scatter_f1_length_ELMo_1024' +current_time +'.pdf')
-# plt.close()
 
