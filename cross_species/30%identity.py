@@ -18,7 +18,7 @@ from torch.utils.data import DataLoader, TensorDataset
 import torch.nn.functional as F
 
 
-with open('/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/Mouse_model/ylabels/protein_names.pkl', 'rb') as f:
+with open('/somedirectory/protein_names.pkl', 'rb') as f:
     proteins = pickle.load(f)
 
 ############################################################################
@@ -30,7 +30,7 @@ def BLAST_alignment(species, index_query, index_alignment, index_identity, prot)
     alignments = {}
     avg_80perc = []
     boo = True
-    with open('/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/Mouse_model/BLAST/BLAST_%s_mouse' % species) as f:
+    with open('/somedirectory/BLAST/BLAST_%s_mouse' % species) as f:
         for line in f:
             if boo:
                 if line[0] != '#':
@@ -62,13 +62,12 @@ aligned_athaliana = BLAST_alignment('athaliana', 1, 3, 4, proteins['athaliana'])
 
 
 
-with open('/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/Mouse_model/ylabels/'
-          'standard_scaler_trained_proteincentric.pkl', 'rb') as f:
+with open('/somedirectory/scaler.pkl', 'rb') as f:
     scaler = pickle.load(f)
 
 
 def open_input(species):
-    with open('/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/Mouse_model/ylabels/%s.pkl' % species, 'rb') as f:
+    with open('/somedirectory/Mouse_model/ylabels/%s.pkl' % species, 'rb') as f:
         yspecies, Xspecies, prot_rat, loc_species = pickle.load(f)
     Xspecies = Xspecies[:, 0:1024]
     Xspecies = scaler.transform(Xspecies)
@@ -82,23 +81,23 @@ Xcelegans, ycelegans, loc_celegans = open_input('celegans')
 Xyeast, yyeast, loc_yeast = open_input('yeast')
 Xathaliana, yathaliana, loc_athaliana = open_input('athaliana')
 
-with open('/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/Mouse_model/ylabels/mouse.pkl', 'rb') as f:
+with open('/somedirectory/ylabels/mouse.pkl', 'rb') as f:
     ymouse, Xm, prot_mouse, loc_mouse = pickle.load(f)
-with open('/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/Mouse_model/ylabels/mouse_index_setsX.pkl', 'rb') as f:
+with open('/somedirectory/mouse_index_setsX.pkl', 'rb') as f:
     Xmouse_train, Xmouse_valid, Xmouse_test = pickle.load(f)
-with open('/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/Mouse_model/ylabels/mouse_index_setsY.pkl', 'rb') as f:
+with open('/somedirectory/ylabels/mouse_index_setsY.pkl', 'rb') as f:
     ymouse_train, ymouse_valid, ymouse_test = pickle.load(f)
 Xmouse_test = Xmouse_test[:, 0:1024]
 Xmouse_test = scaler.transform(Xmouse_test)
 
 def get_indexes(species):
     with open(
-            '/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/Mouse_model/Unique_GO_terms/index_protein_centric/%s.pkl' % species,
+            '/somedirectory/index_protein_centric/%s.pkl' % species,
             'rb') as f:
         protein_indexes = pickle.load(f)
     protein_indexes.remove('GO:0003674')
     with open(
-            '/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/Mouse_model/Unique_GO_terms/index_term_centric/%s.pkl' % species,
+            '/somedirectory/index_term_centric/%s.pkl' % species,
             'rb') as f:
         term_indexes = pickle.load(f)
     term_indexes.remove('GO:0003674')
