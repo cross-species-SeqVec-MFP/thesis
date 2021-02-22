@@ -8,9 +8,9 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from datetime import datetime
 
+# this code gives distributions of the sequence identify to the mouse training set
 
-
-with open('/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/Mouse_model/ylabels/protein_names.pkl', 'rb') as f:
+with open('/somedirectory/protein_names.pkl', 'rb') as f:
     proteins = pickle.load(f)
 
 
