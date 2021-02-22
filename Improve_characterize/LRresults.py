@@ -10,12 +10,11 @@ from sklearn.utils import resample
 import sys
 
 Cs = [1e-3, 1e-2, 1e-1, 1, 10, 100]
-# Fea = [3072, 5120, 10240]
-Fea = [10240]
+Fea = [1024]
 
-with open('/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/final/improve_seqvec/data/XYdata_genmean_scaled_valid_baseline', 'rb') as fw:
+with open('/somedirectory', 'rb') as fw:
     Xvalid, Yvalid, GO_terms = pickle.load(fw)
-print('from baseline')
+
 
 def fmax(Ytrue, Ypost1):
     thresholds = np.linspace(0.0, 1.0, 51)
@@ -78,14 +77,11 @@ def fmax_threshold(Ytrue, Ypost1, t):
 aucLin = np.zeros((len(Cs), len(Fea)))
 for i, C in enumerate(Cs):
     for ii, num_fea in enumerate(Fea):
-        with open('/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/final/improve_seqvec/generalized_means/Trained_LR/c%s_LR_numfea%s_1024LSTM1_baseline.pkl' % (C, num_fea), 'rb') as fw:
+        with open('/somedirectory' % (C, num_fea), 'rb') as fw:
             data = pickle.load(fw)
         clf = data['trained_model']
 
         Ypost = clf.predict_proba(Xvalid[:, 0:num_fea])
-
-        with open('/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/final/improve_seqvec/generalized_means/Trained_LR/c%s_LR_numfea%s_1024LSTM1_valid_baseline.pkl' % (C, num_fea), 'wb') as fw:
-            pickle.dump({'Yval': Yvalid, 'Ypost': Ypost}, fw)
 
         Ypost1 = np.zeros((Yvalid.shape))
         for j, pred in enumerate(Ypost):
@@ -97,20 +93,17 @@ for i, C in enumerate(Cs):
 
 print(aucLin)
 maxi = np.argmax(aucLin, axis=0)
-print('best C values')
-print('for 3072: %s' % Cs[maxi[0]])
-# print('for 5120: %s' % Cs[maxi[1]])
-# print('for 10240: %s' % Cs[maxi[2]])
 
-with open('/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/Proof_moments/optimize/Seeds_random_state', 'rb') as f:
+
+with open('/somedirectory/Seeds_random_state', 'rb') as f:
     seeds = pickle.load(f)
 
-with open('/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/final/improve_seqvec/data/XYdata_genmean_scaled_test', 'rb') as fw:
+with open('/somedirectory', 'rb') as fw:
     Xtest, Ytest, GO_terms = pickle.load(fw)
 
 for j, num_fea in enumerate(Fea):
     bestC = Cs[maxi[j]]
-    with open('/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/final/improve_seqvec/generalized_means/Trained_LR/c%s_LR_numfea%s_1024LSTM1_baseline.pkl' % (bestC, num_fea), 'rb') as fw:
+    with open('/somedirectory' % (bestC, num_fea), 'rb') as fw:
         data = pickle.load(fw)
     clf = data['trained_model']
 
@@ -119,7 +112,7 @@ for j, num_fea in enumerate(Fea):
     for jj, pred in enumerate(Ypost):
         Ypost1[:, jj] = pred[:, 1]
 
-    with open('/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/final/improve_seqvec/generalized_means/Trained_LR/c%s_LR_numfea%s_1024LSTM1_test_baseline.pkl' % (bestC, num_fea), 'wb') as fw:
+    with open('/somedirectory' % (bestC, num_fea), 'wb') as fw:
         pickle.dump({'Yval': Ytest, 'Ypost': Ypost1}, fw)
 
     aucLin = np.nanmean(roc_auc_score(Ytest, Ypost1, average=None))
