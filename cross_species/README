@@ -16,7 +16,7 @@ To perform cross-species SeqVec-based molecular function prediction:
 10) Identity conserved proteins functions across different species using 'GO_term_preserved.py'
 11) Evaluate influence of non-evaluated GO terms using 'protein_Centric_noannotation_results.py'
 
-The folder 'GO terms' contains lists of all the evaluated GO terms per species, the folder 'protein'
+The folder 'GO_terms' contains lists of all the evaluated GO terms per species, the folder 'protein_id'
 contains lists on which proteins were included in the experiments.
 
 [1] Heinzinger, M., Elnaggar, A., Wang, Y., Dallago, C., Nechaev, D., Matthes, F., & Rost, B. (2019). 
