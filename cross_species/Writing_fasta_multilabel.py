@@ -1,7 +1,9 @@
 import numpy as np
 import pickle
+import sys
 
-path = '/somedirectory/fasta_GO_embeddings'
+path = sys.argv[1]
+path1 = sys.argv[2]
 
 with open('%s/mouse_index_traintestvalid.pkl' % path, 'rb') as f:
     mouse_train_ind, mouse_validtest_ind, mouse_valid_ind, mouse_test_ind = pickle.load(f)
@@ -19,10 +21,10 @@ prot_test = prot_validtest[mouse_test_ind]
 boo = False
 info = {}
 seq = ""
-with open('%s/mouse_proteinsequence.fasta' % path, 'r') as f:
+with open('%s/mouse_proteinsequence.fasta' % path1, 'r') as f:
     lines = f.read().splitlines()
     last_line = lines[-1]
-with open('%s/mouse_proteinsequence.fasta' % path) as f:
+with open('%s/mouse_proteinsequence.fasta' % path1) as f:
     for line in f:
         if line[0] == '>':
             if boo:
@@ -36,17 +38,17 @@ with open('%s/mouse_proteinsequence.fasta' % path) as f:
             info[protein_id] = seq
 
 
-ofile = open("%s/mouse_proteinsequence_training_mousemodel.fasta" % path, "w")
+ofile = open("%s/mouse_proteinsequence_training_mousemodel.fasta" % path1, "w")
 for i in prot_train:
     ofile.write(">" + i + "\n" + info[i] + "\n")
 ofile.close()
 
-ofile = open("%s/mouse_proteinsequence_valid_mousemodel.fasta" % path, "w")
+ofile = open("%s/mouse_proteinsequence_valid_mousemodel.fasta" % path1, "w")
 for i in prot_valid:
     ofile.write(">" + i + "\n" + info[i] + "\n")
 ofile.close()
 
-ofile = open("%s/mouse_proteinsequence_test_mousemodel.fasta" % path, "w")
+ofile = open("%s/mouse_proteinsequence_test_mousemodel.fasta" % path1, "w")
 for i in prot_test:
     ofile.write(">" + i + "\n" + info[i] + "\n")
 ofile.close()

@@ -344,12 +344,12 @@ class IterativeStratification(_BaseKFold):
         for fold in folds:
             yield fold
 
- 
-import pickle
 
+import pickle
+import sys
 # this code splits the mouse dataset into a train, validation and test set using a multilabel split.
 
-directory = '/somedirectory/fasta_GO_embeddings'
+directory = sys.argv[1]
 
 with open('%s/mouse.pkl' % directory, 'rb') as f:
     ymouse, Xm, prot, location = pickle.load(f)

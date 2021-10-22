@@ -1,23 +1,28 @@
 from numpy import load
 import numpy as np
 import pickle
-
+import sys
 # This codes ensures that only the proteins with experimentally derived GO annotations
 # are included in the experiments
 
-with open('/somedirectory/Xrat', 'rb') as f:
+embeddingsPath = sys.argv[1]
+evidenceCodesPath = sys.argv[2]
+directory = sys.argv[3]
+directory1 = sys.argv[4]
+
+with open(embeddingsPath + '/Xrat', 'rb') as f:
     Xrat = pickle.load(f)
-with open('/somedirectory/Xmouse', 'rb') as g:
+with open(embeddingsPath + '/Xmouse', 'rb') as g:
     Xmouse = pickle.load(g)
-with open('/somedirectory/Xc.elegans', 'rb') as h:
+with open(embeddingsPath + '/Xc.elegans', 'rb') as h:
     Xcelegans = pickle.load(h)
-with open('/somedirectory/Xyeast', 'rb') as k:
+with open(embeddingsPath + '/Xyeast', 'rb') as k:
     Xyeast = pickle.load(k)
-with open('/somedirectory/Xhuman', 'rb') as k:
+with open(embeddingsPath + '/Xhuman', 'rb') as k:
     Xhuman = pickle.load(k)
-with open('/somedirectory/Xa.thaliana', 'rb') as k:
+with open(embeddingsPath + '/Xa.thaliana', 'rb') as k:
     Xathaliana = pickle.load(k)
-with open('/somedirectory/Xzebrafish', 'rb') as k:
+with open(embeddingsPath + '/Xzebrafish', 'rb') as k:
     Xzebrafish = pickle.load(k)
 
 id_human = Xhuman.keys()
@@ -34,7 +39,7 @@ def experimental_id(id_species):
                       'HTP', 'HDA', 'HMP', 'HGI', 'HEP',
                       'IBA', 'IBD', 'IKR', 'IRD', 'IC', 'TAS']
     evidence_id = []
-    with open("/somedirectory/evidence_codes.gaf") as f:
+    with open(evidenceCodesPath + "/evidence_codes.gaf") as f:
         for line in f:
             line = line.strip("\n")
             line = line.strip().split("\t")
@@ -54,19 +59,19 @@ evi_id_human = experimental_id(id_human)
 evi_id_athaliana = experimental_id(id_athaliana)
 evi_id_zebrafish = experimental_id(id_zebrafish)
 
-with open('/somedirectory/evidence_codes/rat.pkl', 'wb') as f:
+with open(evidenceCodesPath + '/rat.pkl', 'wb') as f:
     pickle.dump(evi_id_rat, f)
-with open('/somedirectory/evidence_codes/mouse.pkl', 'wb') as f:
+with open(evidenceCodesPath + '/mouse.pkl', 'wb') as f:
     pickle.dump(evi_id_mouse, f)
-with open('/somedirectory/evidence_codes/celegans.pkl', 'wb') as f:
+with open(evidenceCodesPath + '/celegans.pkl', 'wb') as f:
     pickle.dump(evi_id_celegans, f)
-with open('/somedirectory/yeast.pkl', 'wb') as f:
+with open(evidenceCodesPath + '/yeast.pkl', 'wb') as f:
     pickle.dump(evi_id_yeast, f)
-with open('/somedirectory/evidence_codes/human.pkl', 'wb') as f:
+with open(evidenceCodesPath + '/human.pkl', 'wb') as f:
     pickle.dump(evi_id_human, f)
-with open('/somedirectory/evidence_codes/athaliana.pkl', 'wb') as f:
+with open(evidenceCodesPath + '/athaliana.pkl', 'wb') as f:
     pickle.dump(evi_id_athaliana, f)
-with open('/somedirectory/evidence_codes/zebrafish.pkl', 'wb') as f:
+with open(evidenceCodesPath + '/zebrafish.pkl', 'wb') as f:
     pickle.dump(evi_id_zebrafish, f)
 
 
@@ -112,4 +117,3 @@ with open('%s/list_terms.txt' % directory, 'w') as f:
     for item in all_unique_GO:
         f.write("%s\n" % item)
     f.write('complete')
-

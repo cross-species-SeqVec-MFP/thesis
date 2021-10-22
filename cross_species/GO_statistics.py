@@ -1,10 +1,14 @@
 import numpy as np
 import pickle
-
+import sys
 # this code gives all the GO annotations per protein, including annotations from ancestor GO terms to
 # GO annotations.
 
-directory = '/somedirectory/evidence_codes'
+directory = sys.argv[1]
+directory1 = sys.argv[2]
+directory2 = sys.argv[3]
+directory3 = sys.argv[4]
+
 
 with open('%s/rat.pkl' % directory, 'rb') as f:
     id_rat = pickle.load(f)
@@ -20,8 +24,6 @@ with open('%s/zebrafish.pkl' % directory, 'rb') as f:
     id_zebrafish = pickle.load(f)
 with open('%s/athaliana.pkl' % directory, 'rb') as f:
     id_athaliana = pickle.load(f)
-
-directory1 = '/somedirectory/fasta_GO_embeddings'
 
 
 def GO_terms_per_protein(dir_tab, protein_id):
@@ -80,7 +82,9 @@ unique_human = list(set(val2 for val in terms_human.values() for val2 in val))
 unique_zebrafish = list(set(val2 for val in terms_zebrafish.values() for val2 in val))
 unique_athaliana = list(set(val2 for val in terms_athaliana.values() for val2 in val))
 
-with open('%s/unique_per_species.pkl' % directory, 'wb') as f:
+
+
+with open('%s/unique_per_species.pkl' % directory3, 'wb') as f:
     pickle.dump({'all': all_unique_GO, 'mouse': unique_mouse, 'rat': unique_rat, 'celegans': unique_celegans, 'yeast': unique_yeast, 'human': unique_human, 'zebrafish': unique_zebrafish, 'athaliana': unique_athaliana}, f)
 
 with open('%s/Xmouse' % directory1, 'rb') as k:
@@ -130,17 +134,17 @@ prot_human, yhuman, Xh, location_human = count_GO(terms_human, unique_human, Xhu
 prot_zebrafish, yzebrafish, Xz, location_zebrafish = count_GO(terms_zebrafish, unique_zebrafish, Xzebrafish)
 prot_athaliana, yathaliana, Xa, location_athaliana = count_GO(terms_athaliana, unique_athaliana, Xathaliana)
 
-with open('%s/mouse.pkl' % directory1, 'wb') as f:
+with open('%s/mouse.pkl' % directory2, 'wb') as f:
     pickle.dump([ymouse, Xm, prot_mouse, location_mouse], f)
-with open('%s/rat.pkl' % directory1, 'wb') as f:
+with open('%s/rat.pkl' % directory2, 'wb') as f:
     pickle.dump([yrat, Xr, prot_rat, location_rat], f)
-with open('%s/celegans.pkl' % directory1, 'wb') as f:
+with open('%s/celegans.pkl' % directory2, 'wb') as f:
     pickle.dump([ycelegans, Xc, prot_celegans, location_celegans], f)
-with open('%s/yeast.pkl' % directory1, 'wb') as f:
+with open('%s/yeast.pkl' % directory2, 'wb') as f:
     pickle.dump([yyeast, Xy, prot_yeast, location_yeast], f)
-with open('%s/human.pkl' % directory1, 'wb') as f:
+with open('%s/human.pkl' % directory2, 'wb') as f:
     pickle.dump([yhuman, Xh, prot_human, location_human], f)
-with open('%s/zebrafish.pkl' % directory1, 'wb') as f:
+with open('%s/zebrafish.pkl' % directory2, 'wb') as f:
     pickle.dump([yzebrafish, Xz, prot_zebrafish, location_zebrafish], f)
-with open('%s/athaliana.pkl' % directory1, 'wb') as f:
+with open('%s/athaliana.pkl' % directory2, 'wb') as f:
     pickle.dump([yathaliana, Xa, prot_athaliana, location_athaliana], f)
