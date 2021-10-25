@@ -7,57 +7,13 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from datetime import datetime
 from scipy.optimize import curve_fit
+import sys
 
-Cs = [1]
-reg = 'l2'
-index = np.arange(0, 89, 1)
-features = [1024]
-boot = np.arange(0, 100, 1)
-perf1024 = np.zeros((441, len(boot)))
-terms = np.zeros((441,)).tolist()
+modelPath = sys.argv[1]
 
-terms2keep = np.load('/somedirectory/termIndicesToUse.npy')
 
-C0_fea1024 = {}
-dict = []
-dict.append([C0_fea1024])
-dict = np.array(dict)
-
-for g, C in enumerate(Cs):
-    for h, fea in enumerate(features):
-        for i in index:
-            Nterms = 5
-            lowerindex = i * Nterms
-            upperindex = (i + 1) * Nterms
-            if upperindex > len(terms2keep):
-                upperindex = len(terms2keep)
-
-            for o in boot:
-                with open('/somedirectory/c%s_terms%s_%s_reg_%s_fea_%s_boot%s.pkl' %
-                          (C, lowerindex, upperindex, reg, fea, o), 'rb') as fw:
-                    data = pickle.load(fw)
-
-                if fea == 1024:
-                    if data['Ytest'].ndim == 2:
-                        samples = data['Ytest'].shape[1]
-                        a = np.arange(0, samples, 1)
-                        for j in a:
-                            ytrue = data['Ytest'][:, j]
-                            ypred = data['Yprob'][j][:, 1]
-                            perf1024[j + lowerindex, o] = roc_auc_score(ytrue, ypred)
-                            terms[j + lowerindex] = data['GO terms'][j]
-                    else:
-                        ytrue = data['Ytest'][:]
-                        ypred = data['Yprob'][:, 1]
-                        perf1024[lowerindex, o] = roc_auc_score(ytrue, ypred)
-                        terms[lowerindex] = data['GO terms']
-                        
-                        
-
-print('for 1024 fea and c is %s' % Cs[0])
-overall_perf = np.mean(perf1024, axis=0)
-print('performance rocauc = %.4f, lower bound %.4f, upper bound %.4f' % (
-np.mean(overall_perf), np.percentile(overall_perf, [2.5, 97.5][0]), np.percentile(overall_perf, [2.5, 97.5][1])))
+with open(modelPath + '/performance.pkl', 'rb') as f:
+    dd = pickle.load(f)
 
 
 
@@ -65,11 +21,9 @@ np.mean(overall_perf), np.percentile(overall_perf, [2.5, 97.5][0]), np.percentil
 #############################################
 # statistical testing
 
-ave_term_1024 = np.mean(perf1024, axis=1)
+ave_term_1024 = dd['tc']
 
-
-
-with open('/somedirectory/GO_depth_all_mouse_proteins.pkl', 'rb') as fw:
+with open('./GO_levels_all_GOterms.pkl', 'rb') as fw:
     depth_GO = pickle.load(fw)
 
 levels = np.zeros((len(terms),))
@@ -92,7 +46,7 @@ for i, x in enumerate(terms):
 # grouping terms
 kids_terms = {}
 for term in depth_2_terms:
-    with open("/somedirectory/GO_descendants/%s.txt" % term) as f:
+    with open("./GO_descendants_%s.txt" % term) as f:
         lines = f.readlines()
     info = np.zeros(2, dtype=object)
     for i, x in enumerate(lines[0].strip("\n").split(" ")):
@@ -166,84 +120,3 @@ plt.close()
 
 
 # #
-
-
-with open('/somedirectory/XYdata_moment_train_Yonly','rb') as fw:
-    Ytrain = pickle.load(fw)
-
-terms2keep = np.load('/somdirectory/termIndicesToUse.npy')
-nb_TP = np.sum(Ytrain, axis=0)
-sum_Y = nb_TP[terms2keep]
-hist = np.digitize(sum_Y, [40, 200, 360, 520, 680, 840, 1000, 1160, 1320, 37000])
-
-df = pd.DataFrame({'Amount of training samples': hist.astype(int), 'Rocauc score': ave_term_1024})
- 
-from scipy import stats
-stats.spearmanr(sum_Y, ave_term_1024)
-stats.spearmanr(levels, ave_term_1024)
-stats.spearmanr(levels, sum_Y)
-
-now = datetime.now()
-current_time = now.strftime("%d%m%Y%H%M%S")
-######### performance per GO term, grouped per amount of training samples
-sns.set(style="whitegrid")
-sns.swarmplot(x="Amount of training samples", y="Rocauc score", zorder=1, data=df,
-              size=3)
-sns.boxplot(x="Amount of training samples", y="Rocauc score", data=df, boxprops={'facecolor': 'None', "zorder": 10},
-            zorder=10, showfliers=False)
-plt.ylim([0.1, 1.1])
-plt.savefig('beeswarm_num_training_bigdata' + current_time + '.pdf')
-plt.close()
-
-
-
-
-df = pd.DataFrame({'GO annotation depth': levels.astype(int), 'Rocauc score': ave_term_1024})
-
-now = datetime.now()
-current_time = now.strftime("%d%m%Y%H%M%S")
-######### performance per GO term, grouped per GO depth
-sns.set(style="whitegrid")
-sns.swarmplot(x="GO annotation depth", y="Rocauc score", zorder=1, data=df, size=3, order=[1, 2, 3, 4, 5, 6, 7, 8, 9])
-plt.title('LR classifier term-centric performance')
-sns.boxplot(x="GO annotation depth", y="Rocauc score", data=df, boxprops={'facecolor': 'None', "zorder": 10}, zorder=10,
-            showfliers=False)
-plt.ylim([0.1, 1.1])
-plt.savefig('beeswarm_GO_level_bigdata' + current_time + '.png')
-plt.savefig('beeswarm_GO_level_bigdata' + current_time + '.pdf')
-plt.close()
-
-
-
-##########################
-# perf vs number of training samples
-with open(
-        '/somedirectory/XYdata_moment_train_Yonly',
-        'rb') as fw:
-    Ytrain = pickle.load(fw)
-
-terms2keep = np.load('/somedirectory/termIndicesToUse.npy')
-nb_TP = np.sum(Ytrain, axis=0)
-sum_Y = nb_TP[terms2keep]
-np.histogram(sum_Y, [40, 100, 200, 300, 400, 500, 750, 1000, 2500, 37000])
-now = datetime.now()
-current_time = now.strftime("%d%m%Y%H%M%S")
-
-plt.hlines(np.mean(ave_term_5120 - ave_term_1024), 0, 36000, zorder=1)
-plt.scatter(sum_Y, ave_term_5120 - ave_term_1024, zorder=2, s=2, color='darkorange', alpha=0.75)
-plt.grid(alpha=0.75)
-plt.xlabel('number of TP in train')
-plt.ylabel('Change rocauc performance')
-plt.xlim((0, 36000))
-# plt.ylim((-0.18, 0.18))
-plt.title('performance per amount of training samples')
-plt.savefig('figures/scatter_change_rocauc_TP' + current_time + '.png')
-plt.savefig('figures/scatter_change_rocauc_TP' + current_time + '.pdf')
-plt.close()
-
-
-
-
-
-
-

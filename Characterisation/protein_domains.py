@@ -5,26 +5,27 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 from scipy import stats
 import pandas as pd
+import sys
 
 domain_list = []
-with open('/somedirectory/domains.tsv') as f:
+with open('./raw_structural_data/domains.tsv') as f:
     for line in f:
         domain_list.append(line.split("\t")[0])
 
 family_list = []
-with open('/somedirectory/families.tsv') as f:
+with open('./raw_structural_data/families.tsv') as f:
     for line in f:
         family_list.append(line.split("\t")[0])
 
 superfamily_list = []
-with open('/somedirectory/superfamilies.tsv') as f:
+with open('./raw_structural_data/superfamilies.tsv') as f:
     for line in f:
         superfamily_list.append(line.split("\t")[0])
 
 domains = {}
 familie = {}
 superfamilie = {}
-with open('/somedirectory/domains.tab') as f:
+with open('./raw_structural_data/domains.tab') as f:
     for line in f:
         if len(line) > 15:
             id = line.split("\t")[0]
@@ -56,22 +57,24 @@ with open('/somedirectory/domains.tab') as f:
 
 
 
+testsetFile = sys.argv[1]
+testProteinNamesFile = sys.argv[2]
+modelPath = sys.argv[3]
 
-with open('/somedirectory/XYdata_scaled_test', 'rb') as fw:
+with open(testsetFile, 'rb') as fw:
     Xtest, Ytest, GO_terms = pickle.load(fw)
 
-protein_id_test = np.loadtxt('/somedirectory/test_final.names', dtype=str).tolist()
+with open(testProteinNamesFile, 'rb ') as f:
+    protein_id_test = pickle.load(f)
 
-with open('/somedirectory/results.pkl', 'rb') as fw:
-    perf1024m, perf3072m, perf5120m, perf10240m, terms = pickle.load(fw)
 
-ave_term_1024 = np.mean(perf1024m, axis=1)
+with open(modelPath + '/performance.pkl', 'rb') as f:
+    dd = pickle.load(f)
+ave_term_1024 = dd['tc']
 
-with open('/somedirectory/GO_depth_all_proteins.pkl', 'rb') as fw:
-    depth_terms = pickle.load(fw)
 
 ### for domains
-num_domain = 0 
+num_domain = 0
 ind_pro = []
 for num, pro in enumerate(protein_id_test):
     if pro in domains.keys():
@@ -390,7 +393,7 @@ plt.ylabel('rocauc')
 plt.savefig('figures/superfamily50%_overlap' + current_time + '.png')
 plt.savefig('figures/superfamily50%_overlap' + current_time + '.pdf')
 plt.close()
- 
+
 
 k = np.fromiter(GO.keys(), dtype=float)
 k1 = np.fromiter(GO1.keys(), dtype=float)
@@ -500,7 +503,7 @@ for term1 in kids_terms.keys():
                         df_domain.append(np.nan)
                     if np.where(np.array(terms) == kid)[0][0] in GO1.keys():
                         df_family.append(highest1[GO1[np.where(np.array(terms) == kid)[0][0]]])
-                    else: 
+                    else:
                         df_family.append(np.nan)
                     if np.where(np.array(terms) == kid)[0][0] in GO2.keys():
                         df_superfam.append(highest2[GO2[np.where(np.array(terms) == kid)[0][0]]])
@@ -550,4 +553,4 @@ plt.grid(axis='y', alpha=0.75)
 plt.xlabel('overlap')
 plt.ylabel('rocauc')
 plt.savefig('figures/GOcategory_overlap' + current_time + '.pdf')
-plt.close() 
+plt.close()
