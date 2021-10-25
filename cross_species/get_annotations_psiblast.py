@@ -5,16 +5,29 @@ import re
 import pandas as pd
 from sklearn.metrics import roc_auc_score
 from sklearn.metrics import precision_recall_fscore_support
+import sys
+
+onto = sys.argv[1]
+if onto == 'C':
+    type_GO = 'cellular_component'
+    root_term = 'GO:0005575'
+elif onto == 'P':
+    type_GO = 'biological_process'
+    root_term = 'GO:0008150'
+else:
+    type_GO = 'molecular_function'
+    root_term = 'GO:0003674'
+
+
+directory = sys.argv[2]
+
+directory1 = sys.argv[3]
+
+directory2 = sys.argv[4]
+
+directory3 = sys.argv[5]
 
 # this code retrieves the GO annotations from PSI-BLAST alignments
-
-directory = '/somedirectory/fasta_GO_embeddings' 
-
-directory1 = '/somedirectory/evidence_codes'
-
-directory2 = '/somedirectory/BLAST'
-
-root_term = 'GO:0005575' # change to correct root term for CC, BP and MF
 
 def get_indexes(species):
     with open('%s/index_protein_centric/%s.pkl' % (directory1, species), 'rb') as f:
@@ -67,7 +80,7 @@ def BLAST_alignment(species, index_query, index_alignment, index_identity, prot)
      proteins that are aligned to the query proteins"""
     alignments = {}
     boo = False
-    with open('%s/psiBLAST_%s_mouse' % (directory2, species)) as f:
+    with open('%s/psiBLAST_%s' % (directory2, species)) as f:
         for line in f:
             if line[0] != '#' and line != '\n' and line != 'Search has CONVERGED!\n':
                 aligned.append(re.split("\||\t", line)[index_alignment])
@@ -88,8 +101,8 @@ def BLAST_alignment(species, index_query, index_alignment, index_identity, prot)
     return alignments
 
 #
-aligned_mousevalid = BLAST_alignment('mousevalid', 0, 1, 2, prot_mouse_valid)
-aligned_mouse = BLAST_alignment('mouse', 0, 1, 2, prot_mouse_test)
+aligned_mousevalid = BLAST_alignment('mouse_valid', 0, 1, 2, prot_mouse_valid)
+aligned_mouse = BLAST_alignment('mouse_test', 0, 1, 2, prot_mouse_test)
 aligned_rat = BLAST_alignment('rat', 1, 3, 4, prot_rat)
 aligned_human = BLAST_alignment('human', 1, 3, 4, prot_human)
 aligned_zebrafish = BLAST_alignment('zebrafish', 1, 3, 4, prot_zebrafish)
@@ -135,7 +148,7 @@ def assinging_Y(species, aligned, prot, dict_index, yvalid, location):
                                     Ypost[protein, location[key1]] = Ypost[protein, location[up_terms]]
 
 
-    with open('%s/results/%s.pkl' % (directory2, species), 'wb') as fw:
+    with open('%s/psiblast_%s.pkl' % (directory3, species), 'wb') as fw:
         pickle.dump({'Yval': yvalid, 'Ypost': Ypost}, fw)
 
     return yvalid, Ypost
@@ -213,7 +226,7 @@ def fmax_threshold(Ytrue, Ypost1, t):
     return ff, coverage
 
 def data(species):
-    with open('%s/results/%s.pkl' % (directory2, species), 'rb') as fw:
+    with open('%s/psiblast_%s.pkl' % (directory3, species), 'rb') as fw:
         data1 = pickle.load(fw)
     return data1
 
@@ -288,4 +301,3 @@ rocauc(term_indexes_zebrafish, 'zebrafish', zebrafish, loc_zebrafish)
 rocauc(term_indexes_celegans, 'celegans', celegans, loc_celegans)
 rocauc(term_indexes_yeast, 'yeast', yeast, loc_yeast)
 rocauc(term_indexes_athaliana, 'athaliana', athaliana, loc_athaliana)
-

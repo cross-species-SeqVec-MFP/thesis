@@ -9,16 +9,27 @@ from sklearn.metrics import roc_auc_score
 from torch.utils.data import DataLoader, TensorDataset
 from sklearn.metrics import precision_recall_fscore_support
 import torch.nn.functional as F
+import sys
+
+onto = sys.argv[1]
+if onto == 'C':
+    type_GO = 'cellular_component'
+    root_term = 'GO:0005575'
+elif onto == 'P':
+    type_GO = 'biological_process'
+    root_term = 'GO:0008150'
+else:
+    type_GO = 'molecular_function'
+    root_term = 'GO:0003674'
+
 
 # this code is used to train the MLP on the mouse training set
 
-directory = '/somedirectory/fasta_GO_embeddings'
+directory = sys.argv[2]
 
-directory1 = '/somedirectory/evidence_codes'
+directory1 = sys.argv[3]
 
-root_term = 'GO:0005575' #change here to root term of the BP, CC or MF
-
-directory_epochs = '/somedirectory/neural_model/epochs'
+directory_epochs = sys.argv[4]
 
 with open('%s/mouse.pkl' % directory, 'rb') as f:
     ymouse, Xm, prot_mouse, loc_mouse = pickle.load(f)
@@ -31,7 +42,7 @@ Xmouse_valid = Xmouse_valid[:, 0:1024]
 
 scaler = StandardScaler()
 Xtrain = scaler.fit_transform(Xmouse_train)
-with open('%s/standard_scaler_trained' % directory1, 'wb') as f:
+with open('%s/standard_scaler_trained' % directory_epochs, 'wb') as f:
     pickle.dump(scaler, f)
 
 Xvalid = scaler.transform(Xmouse_valid)
@@ -134,7 +145,7 @@ optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 # Define scheduler for learning rate adjustment
 # don't want to get stuck in 'local minimum'
 scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.1, patience=5)
- 
+
 # define loss function loss functions;
 # contains the sigmoid function at the end
 loss_fn = torch.nn.MultiLabelSoftMarginLoss()
@@ -228,9 +239,7 @@ for epoch in range(epochs):
         'learning_rate': learning_rate,
         'Ytrue': y_true1,
         'Ypred': y_pred_sigm1,
-    }, '%s/epoch%s' % (directory_epochs, epoch))
+    }, '%s/epoch%s' % (directory_epochs+'epochs/', epoch))
 
 with open('%s/valid_results' % directory_epochs, 'wb') as f:
     pickle.dump([rocauc_scores, epochie, fmax_scores, coverage_scores, threshold_scores], f)
-
-

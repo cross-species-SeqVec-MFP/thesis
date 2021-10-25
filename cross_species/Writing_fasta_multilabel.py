@@ -38,17 +38,17 @@ with open('%s/mouse_proteinsequence.fasta' % path1) as f:
             info[protein_id] = seq
 
 
-ofile = open("%s/mouse_proteinsequence_training_mousemodel.fasta" % path1, "w")
+ofile = open("%s/mouse_train_proteinsequence.fasta" % path1, "w")
 for i in prot_train:
     ofile.write(">" + i + "\n" + info[i] + "\n")
 ofile.close()
 
-ofile = open("%s/mouse_proteinsequence_valid_mousemodel.fasta" % path1, "w")
+ofile = open("%s/mouse_valid_proteinsequence.fasta" % path1, "w")
 for i in prot_valid:
     ofile.write(">" + i + "\n" + info[i] + "\n")
 ofile.close()
 
-ofile = open("%s/mouse_proteinsequence_test_mousemodel.fasta" % path1, "w")
+ofile = open("%s/mouse_test_proteinsequence.fasta" % path1, "w")
 for i in prot_test:
     ofile.write(">" + i + "\n" + info[i] + "\n")
 ofile.close()

@@ -15,15 +15,26 @@ from torch.utils.data import DataLoader, TensorDataset
 from sklearn.metrics import precision_recall_fscore_support
 import torch.nn.functional as F
 
-# this code evaluates the performance of the MLP on the target species
+onto = sys.argv[1]
+if onto == 'C':
+    type_GO = 'cellular_component'
+    root_term = 'GO:0005575'
+elif onto == 'P':
+    type_GO = 'biological_process'
+    root_term = 'GO:0008150'
+else:
+    type_GO = 'molecular_function'
+    root_term = 'GO:0003674'
 
-directory = '/somedirectory/fasta_GO_embeddings'
 
-directory1 = '/somedirectory/evidence_codes'
+# this code is used to train the MLP on the mouse training set
 
-root_term = 'GO:0005575' # change to root term for either BP, MF or CC
+directory = sys.argv[2]
 
-directory_epochs = '/somedirectory/neural_model/epochs'
+directory1 = sys.argv[3]
+
+directory_epochs = sys.argv[4]
+directory_predictions = sys.argv[5]
 
 
 with open('%s/standard_scaler_trained' % directory1, 'rb') as f:
@@ -160,7 +171,7 @@ for key in depth_terms.keys():
     if depth > max_value:
         max_value = depth
 
-with open('/somedirectory/Seeds_random_state', 'rb') as f:
+with open('Seeds_random_state', 'rb') as f:
     seeds = pickle.load(f)
 
 with open('%s/valid_results' % directory_epochs, 'rb') as f:
@@ -172,7 +183,7 @@ best_epoch = np.argmax(fmax_scores)
 threshold1 = threshold_scores[np.argmax(fmax_scores)]
 
 checkpoint = torch.load(
-    '%s/epoch%s' % (directory_epochs,best_epoch))
+    '%s/epochs/epoch%s' % (directory_epochs,best_epoch))
 model.load_state_dict(checkpoint['model_state_dict'])
 
 model.eval()
@@ -215,7 +226,7 @@ def predictions_protein(loader_, indexes, loc, species):
                                 for protein in index:
                                     y_pred_sigm_protein[protein, location[key11]] = y_pred_sigm_protein[
                                         protein, location[up_terms]]
-  
+
     # fmax score
     avg_fmax, cov = fmax_threshold(y_true_protein, y_pred_sigm_protein, threshold1)
     print('for %s' % species)
@@ -233,7 +244,7 @@ def predictions_protein(loader_, indexes, loc, species):
     print(np.percentile(boot_results_f1, [2.5, 97.5]))
     sys.stdout.flush()
 
-    with open('%s/predictions_protein_centric_%s.pkl' % (directory_epochs, species), 'wb') as fw:
+    with open('%s/predictions_protein_centric_%s.pkl' % (directory_predictions, species), 'wb') as fw:
         pickle.dump({'Yval': y_true_protein, 'Ypost': y_pred_sigm_protein, 'loc_term': location, 'allY': y_true1}, fw)
 
 
@@ -251,7 +262,7 @@ predictions_protein(loader_athaliana, protein_indexes_athaliana, loc_athaliana, 
 ########### for term centric
 best_epoch = np.argmax(rocauc_scores)
 
-checkpoint1 = torch.load('%s/epoch%s' % (directory_epochs, best_epoch))
+checkpoint1 = torch.load('%s/epochs/epoch%s' % (directory_epochs, best_epoch))
 model1.load_state_dict(checkpoint1['model_state_dict'])
 
 model1.eval()
@@ -312,7 +323,7 @@ def predictions_term(loader_, indexes, loc, species):
     print(np.percentile(boot_results_rocauc, [2.5, 97.5]))
     sys.stdout.flush()
 
-    with open('%s/predictions_term_centric_%s.pkl' % (directory_epochs, species), 'wb') as fw:
+    with open('%s/predictions_term_centric_%s.pkl' % (directory_predictions, species), 'wb') as fw:
         pickle.dump({'Yval': y_true_term, 'Ypost': y_pred_sigm_term, 'loc_term': location, 'allY': y_true1}, fw)
 
 
@@ -324,4 +335,3 @@ predictions_term(loader_zebrafish, term_indexes_zebrafish, loc_zebrafish, 'zebra
 predictions_term(loader_celegans, term_indexes_celegans, loc_celegans, 'celegans')
 predictions_term(loader_yeast, term_indexes_yeast, loc_yeast, 'yeast')
 predictions_term(loader_athaliana, term_indexes_athaliana, loc_athaliana, 'athaliana')
-

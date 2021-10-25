@@ -10,7 +10,9 @@ from datetime import datetime
 
 # this code gives distributions of the sequence identify to the mouse training set
 
-with open('/somedirectory/protein_names.pkl', 'rb') as f:
+blastpPath = sys.argv[1]
+
+with open('./protein_names.pkl', 'rb') as f:
     proteins = pickle.load(f)
 
 
@@ -20,7 +22,7 @@ def BLAST_alignment(species, index_query, index_alignment, index_identity, prot)
     alignments = {}
     seq_id = []
     boo = True
-    with open('/tudelft.net/staff-bulk/ewi/insy/DBL/ivandenbent/Mouse_model/BLAST/BLAST_%s_mouse' % species) as f:
+    with open(blastpPath + '/BLAST_%s_mouse' % species) as f:
         for line in f:
             if boo:
                 if line[0] != '#':
@@ -44,14 +46,13 @@ aligned_yeast = BLAST_alignment('yeast', 1, 3, 4, proteins['yeast'])
 aligned_athaliana = BLAST_alignment('athaliana', 1, 3, 4, proteins['athaliana'])
 
 def hist_rocauc(perri, species):
+    plt.figure()
     plt.hist(perri, bins=[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100], weights=np.ones(len(perri)) / len(perri), color='darkorange', alpha=1, rwidth=0.85)
     plt.axvline(perri.mean(), 0, 1, label='pyplot vertical line')
     plt.grid(axis='y', alpha=0.75)
     plt.xlabel('Sequence identity')
     plt.ylabel('Count')
-    # plt.savefig('figures/Hist_seq_id_%s' % species +'.png')
-    plt.savefig('figures/Hist_seq_id_frac_%s' % species +'.pdf')
-    plt.close()
+    
 
 hist_rocauc(aligned_mouse, 'mouse_test')
 hist_rocauc(aligned_rat, 'rat')
