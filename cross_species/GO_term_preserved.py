@@ -6,29 +6,27 @@ from sklearn.metrics import roc_auc_score
 from statistics import mean
 import matplotlib.pyplot as plt
 from datetime import datetime
+import sys
 
 # this code finds the performance of the MLP classifier per 'GO category'
 
-with open('/somedirectory/GO_depth_all_mouse_proteins.pkl', 'rb') as fw:
+goTermsPath = sys.argv[1]
+predictionsPath = sys.argv[2]
+
+with open(goTermsPath + '/GO_levels_all_GOterms.pkl', 'rb') as fw:
     depth_GO = pickle.load(fw)
 
 def get_terms(species):
-    with open('/somedirectory/validation_results/predictions_term_centric/%s.pkl' % species, 'rb') as fw:
+    with open(predictionsPath + '/predictions_term_centric/%s.pkl' % species, 'rb') as fw:
         data = pickle.load(fw)
 
     rocauc = roc_auc_score(data['Yval'], data['Ypost'], average=None)
-
-    with open('/somedirectory/BLAST/annotation_result/term_centric/%s.pkl' % species, 'rb') as fw:
-        data_blast = pickle.load(fw)
-
-    rocauc_blast = roc_auc_score(data_blast['Yval'], data_blast['Ypost'], average=None)
 
     df_species = []
     df_function = []
     df_rocauc = []
     df_speciesb = []
     df_functionb = []
-    df_rocaucb = []
     avg_rocauc = {}
     avg_rocauc_numkids = {}
 
@@ -54,13 +52,13 @@ def get_terms(species):
 
 
             avg = []
-            avg_blast = []
+
             avg.append(rocauc[data['loc_term'][term]])
-            avg_blast.append(rocauc_blast[data['loc_term'][term]])
+
             for kid in kids_terms[term][1]:
                 if kid in data['loc_term'].keys():
                     avg.append(rocauc[data['loc_term'][kid]])
-                    avg_blast.append(rocauc_blast[data['loc_term'][kid]])
+
             if len(avg) >= 5:
                 avg_rocauc[term] = mean(avg)
                 avg_rocauc_numkids[term] = len(avg)
@@ -69,22 +67,20 @@ def get_terms(species):
                     df_rocauc.append(mean(avg))
                     df_species.append(species)
                     df_function.append(kids_terms[term][0])
-                    df_rocaucb.append(mean(avg_blast))
-                    df_speciesb.append(species)
-                    df_functionb.append(kids_terms[term][0])
-
-    return avg_rocauc, avg_rocauc_numkids, df_rocauc, df_function, df_species, df_rocaucb, df_functionb, df_speciesb
 
 
-avg_rocauc_mouse, avg_rocauc_numkids_mouse, df_r_mouse, df_f_mouse, df_s_mouse, df_rb_mouse, df_fb_mouse, df_sb_mouse = get_terms('mouse_test')
-avg_rocauc_rat, avg_rocauc_numkids_rat, df_r_rat, df_f_rat, df_s_rat, df_rb_rat, df_fb_rat, df_sb_rat = get_terms('rat')
-avg_rocauc_human, avg_rocauc_numkids_human, df_r_human, df_f_human, df_s_human, df_rb_human, df_fb_human, df_sb_human = get_terms('human')
-avg_rocauc_zebrafish, avg_rocauc_numkids_zebrafish, df_r_zebrafish, df_f_zebrafish, df_s_zebrafish, df_rb_zebrafish, df_fb_zebrafish, df_sb_zebrafish = get_terms('zebrafish')
-avg_rocauc_celegans, avg_rocauc_numkids_celegans, df_r_celegans, df_f_celegans, df_s_celegans, df_rb_celegans, df_fb_celegans, df_sb_celegans = get_terms('celegans')
-avg_rocauc_yeast, avg_rocauc_numkids_yeast, df_r_yeast, df_f_yeast, df_s_yeast, df_rb_yeast, df_fb_yeast, df_sb_yeast = get_terms('yeast')
-avg_rocauc_athaliana, avg_rocauc_numkids_athaliana, df_r_athaliana, df_f_athaliana, df_s_athaliana, df_rb_athaliana, df_fb_athaliana, df_sb_athaliana = get_terms('athaliana')
+    return avg_rocauc, avg_rocauc_numkids, df_rocauc, df_function, df_species
 
-all_df_rb = df_rb_mouse + df_rb_rat + df_rb_human + df_rb_zebrafish + df_rb_celegans + df_rb_yeast + df_rb_athaliana
+
+avg_rocauc_mouse, avg_rocauc_numkids_mouse, df_r_mouse, df_f_mouse, df_s_mouse = get_terms('mouse_test')
+avg_rocauc_rat, avg_rocauc_numkids_rat, df_r_rat, df_f_rat, df_s_rat = get_terms('rat')
+avg_rocauc_human, avg_rocauc_numkids_human, df_r_human, df_f_human, df_s_human = get_terms('human')
+avg_rocauc_zebrafish, avg_rocauc_numkids_zebrafish, df_r_zebrafish, df_f_zebrafish, df_s_zebrafish = get_terms('zebrafish')
+avg_rocauc_celegans, avg_rocauc_numkids_celegans, df_r_celegans, df_f_celegans, df_s_celegans = get_terms('celegans')
+avg_rocauc_yeast, avg_rocauc_numkids_yeast, df_r_yeast, df_f_yeast, df_s_yeast = get_terms('yeast')
+avg_rocauc_athaliana, avg_rocauc_numkids_athaliana, df_r_athaliana, df_f_athaliana, df_s_athaliana = get_terms('athaliana')
+
+
 all_df_f = df_f_mouse + df_f_rat + df_f_human + df_f_zebrafish + df_f_celegans + df_f_yeast + df_f_athaliana
 all_df_r = df_r_mouse + df_r_rat + df_r_human + df_r_zebrafish + df_r_celegans + df_r_yeast + df_r_athaliana
 all_df_s = df_s_mouse + df_s_rat + df_s_human + df_s_zebrafish + df_s_celegans + df_s_yeast + df_s_athaliana
@@ -147,4 +143,3 @@ now = datetime.now()
 current_time = now.strftime("%d%m%Y%H%M%S")
 plt.savefig('heatmap' + current_time + '.pdf')
 plt.close()
-

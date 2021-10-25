@@ -1,50 +1,20 @@
 To perform cross-species SeqVec-based molecular function prediction:
 
-To obtain protein-level SeqVec embeddings and select GO terms and proteins for the evalaution:
-1) Use pre-trained SeqVec model as made available by [1] to obtain the protein-level embeddings from 
-   the SeqVec model.
-2) Use 'extract_embeddings.py' to obtain the amino acid-level embeddings from the SeqVec model output
-   and into a compatible format. 
-3) Use 'evidence_codes.py' to select only the proteins with GO annotations that are obtained experimentally.
-   This requires the GO Annotation File (evidence_codes.gaf) file. Additionally, this code gives a file
-   with all the unique GO terms present in the entire cross-species dataset.
-4) To get all the full GO annotations for the proteins, the GO ancestor terms of GO annotations need to be
-   included in the test set. Using the goatools libary from [2] and the linux code of 'get_GO_ancestors'
-   all the GO ancestors can be retrieved. 
-5) Get GO term annotations (class labels) for all proteins from the target species using 
-   'GO_statistics.py'
-6) Use 'split_stratify.py' to split the central model species dataset into a training, validation 
-   and test set. This uses the multilabel split algorithm from [3]. Similarly, use 'write_fasta_multilabel.py'
-   to write a .fasta file ontaining protein sequences for the central model species train, validation and test 
-   set.
-7) Get the overlapping GO terms between the central model organism and the target species
-   for term-centric and protein-centric evaluation using 'get_GO_terms.py'.
+1) Download data from ??? ???
 
-To train and evaluate the MLP:
-8) Train a MLP classifier using 'neural_network.py' on the Mouse training set. 
-9) Evaluate performance of MLP classifier in target species using 'neural_network_results.py'
+2) Install seqvec (???), psiblast, blast, goatools and DeepGOPlus (???)
 
-To get baseline PSI-BLAST results:
-10) Run psi-blast using the psi-blast module, find our used inputs in 'psi_blast_run'
-11) Get performance baseline PSI-BLAST method using 'get_annotations_psiblast.py'
+3) Provide the following directories
+seqvecOutputPath  - where seqvec output is saved
+fastaPath         - where sequences and go annotations in tab format are saved (from uniprotKB)
+embeddingsPath    - contains processed seqvec output
+evidenceCodesPath - info on evidence code filtering
+goTermsPath       - (created automatically) information on go terms
+goatoolsPath      - where goatools are installed
+dataPath          - (created automatically) data matrices for further analyses
+ontology          - molecular function ('F'), biological process ('P') or cellular component ('C')
+mlpPath           - (created automatically) where mlp models are trained/saved
+predictionsPath   - where predictions of mlp and psiblast are stored
+blastPath         - location of psiblast databases
 
-To do consequent analysis:
-12) Get distributions on sequence identity using 'distru_Seq_identity.py'
-13) Get PSI-BLAST top hit for every target protein using 'top_hit.py'
-14) Identity conserved proteins functions across different species using 'GO_term_preserved.py'
-15) Evaluate influence of non-evaluated GO terms using 'protein_Centric_noannotation_results.py'
-16) Evaluate performance of MLP classifier on protein from target species with max. 30% sequence identity
-    using '30%identity.py'
-
-The folder 'GO_terms' contains lists of all the evaluated GO terms per species per GO root term (BP, CC or MF).
-The folder 'protein_id' similarly contains lists on which proteins were included in the experiments.
-The folder 'raw_fasta_GO' contains the raw datafiles on protein sequences and GO annotations as obtained
-from the SwissProt database.
-
-[1] Heinzinger, M., Elnaggar, A., Wang, Y., Dallago, C., Nechaev, D., Matthes, F., & Rost, B. (2019). 
-    Modeling aspects of the language of life through transfer-learning protein sequences. 
-    BMC bioinformatics, 20(1), 723.
-[2] Klopfenstein DV, Zhang L, Pedersen BS, ... Tang H GOATOOLS: A Python library for Gene Ontology 
-    analyses Scientific reports | (2018) 8:10872 | DOI:10.1038/s41598-018-28948-z
-[3] Szyma ́nski P, Kajdanowicz T.  A scikit-based Python environment for performingmulti-label 
-    classification.  ArXiv e-prints. 2017
+4) run main.sh with all the above as input arguments (in that order)
