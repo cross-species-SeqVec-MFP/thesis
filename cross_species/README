@@ -1,8 +1,8 @@
 To perform cross-species SeqVec-based molecular function prediction:
 
-1) Download data from ??? ???
+1) Download fasta and GO annotation files from uniprotKB
 
-2) Install seqvec (???), psiblast, blast, goatools and DeepGOPlus (???)
+2) Install seqvec https://github.com/rostlab/SeqVec, psiblast, blast, goatools and DeepGOPlus https://github.com/bio-ontology-research-group/deepgoplus
 
 3) Provide the following directories
 seqvecOutputPath  - where seqvec output is saved

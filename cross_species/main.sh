@@ -11,8 +11,7 @@ mlpPath=$9;
 predictionsPath=$10;
 blastPath=$11;
 
-# step 1 - run seqvec code from heizinger et al  ??? link ???, save at seqvecOutputPath
-## FILL THIS IN
+# step 1 - run seqvec code from heizinger et al  https://github.com/rostlab/SeqVec with species fasta files as input, save at seqvecOutputPath
 
 # step 2 - save embeddings in necessary format
 python extract_embeddings.py $seqvecOutputPath $fastaPath $embeddingsPath;
@@ -22,7 +21,7 @@ mkdir $goTermsPath
 python evidence_codes.py $embeddingsPath $evidenceCodesPath $goTermsPath $fastaPath;
 
 
-# step 4 install GOAtools ??? link ??? in directory goatoolsPath
+# step 4 install GOAtools https://github.com/tanghaibao/goatools in directory goatoolsPath
 while IFS= read -r line; do
     $goatoolsPath"/bin/wr_hier.py" $line --concise --up -o $goTermsPath'/GO_ancestors/'$line'.txt'
 done < $goTermsPath'/list_terms.txt';

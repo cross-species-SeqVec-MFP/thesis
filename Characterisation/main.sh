@@ -20,7 +20,7 @@ python LR_results.py $validPath $testPath $modelPath;
 # step 3 get term path length to root
 python GO_level.py $trainPath $validPath $testPath;
 
-# step 4 install GOAtools ??? link ??? in directory goatoolsPath
+# step 4 install GOAtools https://github.com/tanghaibao/goatools in directory goatoolsPath
 while IFS= read -r line; do
     $goatoolsPath"/bin/wr_hier.py" $line --concise -o './GO_descendants_'$line'.txt'
 done < './all_terms.txt';
