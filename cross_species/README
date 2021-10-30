@@ -18,3 +18,5 @@ predictionsPath   - where predictions of mlp and psiblast are stored
 blastPath         - location of psiblast databases
 
 4) run main.sh with all the above as input arguments (in that order)
+
+Our predictions of SeqVec, DeepGOPlus, and psiBLAST are avaialble as a .zip file at https://drive.google.com/file/d/12yjPGUm-rnx__VclNtIsbMTZTfioT-Zu/view?usp=sharing
